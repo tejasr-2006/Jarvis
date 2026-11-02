@@ -38,6 +38,7 @@ from app.api.proactive import router as proactive_router
 from app.api.predictive_planning import router as predictive_planning_router
 from app.api.personalization import router as personalization_router
 from app.api.knowledge import router as knowledge_router
+from app.api.knowledge_ui import router as knowledge_ui_router
 from app.api.email_calendar_intelligence import router as intelligence_router
 from app.api.personal_finance_fitness import router as personal_finance_fitness_router
 from app.api.multimodal import router as multimodal_router
@@ -183,6 +184,7 @@ app.include_router(proactive_router)
 app.include_router(predictive_planning_router)
 app.include_router(personalization_router)
 app.include_router(knowledge_router)
+app.include_router(knowledge_ui_router)
 app.include_router(intelligence_router)
 app.include_router(personal_finance_fitness_router)
 app.include_router(multimodal_router)

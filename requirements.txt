@@ -6,3 +6,8 @@ google-genai
 pytest
 python-multipart
 pypdf
+tzdata
+
+-r requirements-calendar.txt
+-r requirements-desktop.txt
+-r requirements-voice.txt

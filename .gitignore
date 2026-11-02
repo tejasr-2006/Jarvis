@@ -151,6 +151,7 @@ huggingface/
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.example.json
+!.vscode/settings.json
 .DS_Store
 **/.DS_Store
 Thumbs.db
@@ -162,4 +163,3 @@ Desktop.ini
 # -------------------- Test / local environment files ----------
 .envrc
 .python-version.local
-

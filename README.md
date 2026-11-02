@@ -36,6 +36,10 @@ The long-term goal is to create an intelligent assistant that can understand req
 - Manage and clear saved memory.
 - Import and search personal knowledge documents.
 
+Knowledge search indexes document chunks in local SQLite FTS5, combines BM25 and TF-IDF cosine rankings with reciprocal-rank fusion, and returns source metadata plus neighboring chunk context. The authenticated `GET /knowledge/search` endpoint accepts `q`, `limit`, and optional `source`, `updated_after`, and `updated_before` filters. The read-only `knowledge.search` agent tool uses the same filters and result citations; it is enabled by default and can be disabled through `JARVIS_ENABLED_TOOLS`.
+
+Open the browser-based knowledge library at `/knowledge-library` to add local text documents, filter/search indexed chunks, and manage saved sources. Enter the configured `JARVIS_API_KEY` in the page; the key is kept only in the current browser tab's session storage.
+
 ### Productivity and Planning
 - Task management.
 - Reminders and notifications.
@@ -127,6 +131,8 @@ JARVIS uses a modular architecture with a central FastAPI application coordinati
 - **Permission-based execution:** Validate actions and enforce approval requirements.
 - **Local-first personal data:** Use local storage for supported personal features.
 - **Extensibility:** Allow new tools, integrations, and modules to be added independently.
+
+See [the JARVIS 2.0 architecture audit and implementation roadmap](docs/JARVIS_2_0_ROADMAP.md) for verified implementation boundaries and prioritized engineering work.
 
 ### Technology Stack
 

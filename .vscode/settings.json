@@ -1,0 +1,17 @@
+{
+  "chat.promptFiles": true,
+  "github.copilot.chat.codeGeneration.instructions": [
+    { "file": ".github/copilot-instructions.md" }
+  ],
+  "github.copilot.chat.testGeneration.instructions": [
+    { "file": ".github/copilot-instructions.md" },
+    {
+      "text": "Add or update focused tests for changed behavior. Prefer test-first development and Arrange-Act-Assert structure where practical. Follow the project's existing test and coverage conventions."
+    }
+  ],
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Use conventional commit format: <type>: <description>. Types: feat, fix, refactor, docs, test, chore, perf, ci. Keep the subject concise and focus on why the change was made."
+    }
+  ]
+}

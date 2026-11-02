@@ -14,7 +14,10 @@ _WORDS = re.compile(r"[A-Za-z0-9_'-]{2,}", re.UNICODE)
 
 
 def _terms(text: str) -> list[str]:
-    return list(dict.fromkeys(word.casefold() for word in _WORDS.findall(text)))
+    return list(dict.fromkeys(
+        word.casefold() for word in _WORDS.findall(text)
+        if any(character.isalnum() for character in word)
+    ))
 
 
 def _fts_query(terms: list[str]) -> str:
