@@ -1,4 +1,4 @@
 # Optional local/offline wake-word and speech recognition dependencies.
--r requirements-desktop.txt
+
 vosk>=0.3.45,<1
 sounddevice>=0.4.6,<1

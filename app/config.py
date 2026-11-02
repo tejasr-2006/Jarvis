@@ -46,7 +46,7 @@ class Settings:
     JARVIS_ENABLED_TOOLS: set[str] = {
         item.strip() for item in os.getenv(
             "JARVIS_ENABLED_TOOLS",
-            "email.high_priority.read,fitness.workouts.read"
+            "email.high_priority.read,fitness.workouts.read,knowledge.search"
         ).split(",") if item.strip()
     }
     # Fitness Manager server-to-server login. Never expose these to the frontend.

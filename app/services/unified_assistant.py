@@ -98,9 +98,12 @@ class UnifiedAssistant:
             if "fitness.workouts.read" not in enabled_tools():
                 return {"status": "permission_denied", "intent": "fitness.workouts.read",
                         "message": "Fitness reading is disabled in JARVIS tool permissions."}
-            if not settings.FITNESS_MANAGER_API_TOKEN:
+            has_login = bool(
+                settings.FITNESS_MANAGER_EMAIL and settings.FITNESS_MANAGER_PASSWORD
+            )
+            if not has_login and not settings.FITNESS_MANAGER_API_TOKEN:
                 return {"status": "authentication_required", "intent": "fitness.workouts.read",
-                        "message": "Configure FITNESS_MANAGER_API_TOKEN in JARVIS .env first."}
+                        "message": "Configure FITNESS_MANAGER_EMAIL and FITNESS_MANAGER_PASSWORD (or the legacy FITNESS_MANAGER_API_TOKEN) in JARVIS .env first."}
             try:
                 data = await FitnessManagerClient().get_workouts()
                 return {"status": "success", "intent": "fitness.workouts.read",

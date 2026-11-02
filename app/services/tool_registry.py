@@ -1,14 +1,9 @@
-"""Backward-compatible tool metadata backed by the new agent registry.
-
-The existing command executor still consumes enabled_tools(); the new agent
-runtime can consume AGENT_TOOL_REGISTRY and its typed contracts. Actual service
-handlers are attached in the integration phase, not guessed here.
-"""
+"""Backward-compatible tool metadata and trusted agent tool handlers."""
 from dataclasses import dataclass
 from app.config import settings
 from app.agent.contracts import ToolSpec
 from app.agent.registry import ToolRegistry
-from app.tools.integration_tools import read_high_priority_emails, read_workouts
+from app.tools.integration_tools import read_high_priority_emails, read_workouts, search_knowledge
 
 
 @dataclass(frozen=True)
@@ -26,6 +21,10 @@ TOOL_DEFINITIONS = {
     "fitness.workouts.read": ToolDefinition(
         "fitness.workouts.read",
         "Read workout records from the existing Fitness Manager API."
+    ),
+    "knowledge.search": ToolDefinition(
+        "knowledge.search",
+        "Search local personal knowledge with hybrid ranking. Use when the request asks about stored documents, notes, or sources; narrow by source or update time when relevant. Results include source citations and nearby chunk context."
     ),
 }
 
@@ -47,11 +46,18 @@ def build_agent_registry() -> ToolRegistry:
             handler={
                 "email.high_priority.read": read_high_priority_emails,
                 "fitness.workouts.read": read_workouts,
+                "knowledge.search": search_knowledge,
             }[name],
             input_schema={
                 "type": "object",
-                "properties": {},
-                "required": [],
+                "properties": {
+                    "query": {"type": "string", "minLength": 1, "maxLength": 500},
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 50},
+                    "source": {"type": "string", "maxLength": 300},
+                    "updated_after": {"type": "string", "maxLength": 50},
+                    "updated_before": {"type": "string", "maxLength": 50},
+                } if name == "knowledge.search" else {},
+                "required": ["query"] if name == "knowledge.search" else [],
                 "additionalProperties": False,
             },
             permission="read",
