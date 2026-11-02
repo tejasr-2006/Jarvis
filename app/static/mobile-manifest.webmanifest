@@ -1,0 +1,13 @@
+{
+  "name": "JARVIS Mobile",
+  "short_name": "JARVIS",
+  "description": "Private mobile control panel for your JARVIS assistant",
+  "start_url": "/mobile",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#0b1020",
+  "icons": [
+    {"src": "/mobile/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}
+  ]
+}

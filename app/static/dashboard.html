@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS Control Dashboard · Personal Overview</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#121a2e;--panel2:#18233b;--text:#edf3ff;--muted:#9aa9c4;--line:#2a3855;--accent:#70d6ff;--ok:#68e0b0;--warn:#ffcf70;--bad:#ff8b9b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top left,#152849 0,transparent 42%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:1280px;margin:auto;padding:28px 20px 60px}.top{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
+.brand{display:flex;gap:13px;align-items:center}.orb{width:46px;height:46px;border:1px solid #70d6ff88;border-radius:50%;display:grid;place-items:center;color:var(--accent);box-shadow:0 0 28px #70d6ff22;font-weight:800;letter-spacing:1px}
+h1{font-size:25px;margin:0;letter-spacing:.02em}p{margin:4px 0;color:var(--muted)}.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input,button{font:inherit;border-radius:10px;border:1px solid var(--line);padding:10px 12px;background:var(--panel);color:var(--text)}input{width:min(340px,65vw)}button{cursor:pointer;background:#173b5a;border-color:#316b90}button:hover{filter:brightness(1.15)}button.secondary{background:var(--panel)}
+.notice{margin:18px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#11192b;color:var(--muted)}.notice.error{color:var(--bad);border-color:#803d50}.notice.success{color:var(--ok)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}.metric,.panel{border:1px solid var(--line);background:linear-gradient(160deg,var(--panel),#0f1728);border-radius:16px;padding:17px;min-width:0}.metric .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em}.metric .value{font-size:27px;font-weight:700;margin-top:5px;overflow-wrap:anywhere}.metric .sub{font-size:12px;color:var(--muted)}
+.columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.panel h2{font-size:16px;margin:0 0 12px;display:flex;align-items:center;gap:8px}.dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}.panel .muted{color:var(--muted);font-size:13px}.item{padding:10px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}.item:first-of-type{border-top:0}.item strong{display:block;font-weight:600}.item small{color:var(--muted)}.pill{display:inline-block;border:1px solid var(--line);border-radius:20px;padding:2px 8px;font-size:11px;color:var(--muted);margin-left:6px}.pill.ok{color:var(--ok)}.pill.warn{color:var(--warn)}.pill.bad{color:var(--bad)}.empty{color:var(--muted);font-size:13px;padding:8px 0}.footer{color:var(--muted);font-size:12px;margin-top:20px}
+
+.voice-panel{margin:18px 0;border:1px solid #316b90;background:linear-gradient(145deg,#13243a,#11192b);border-radius:16px;padding:17px}
+.voice-panel h2{margin:0 0 6px;font-size:17px}.voice-panel .hint{color:var(--muted);font-size:13px;margin:0 0 12px}
+.voice-controls{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:10px}
+.voice-controls textarea,.voice-controls select{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;width:100%;box-sizing:border-box}
+.voice-controls textarea{min-height:72px;resize:vertical}.voice-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+.voice-actions button{padding:9px 12px}.briefing-panel{margin:18px 0;border:1px solid #405477;background:linear-gradient(145deg,#17233a,#11192b);border-radius:16px;padding:17px}
+.briefing-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.briefing-head h2{margin:0;font-size:18px}.briefing-actions{display:flex;gap:8px;flex-wrap:wrap}
+.briefing-settings{display:grid;grid-template-columns:1fr 1fr 1.4fr 1.4fr auto;gap:9px;margin-top:12px;align-items:end}
+.briefing-settings label{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:12px}
+.briefing-settings input,.briefing-settings select{width:100%;min-width:0;font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px}
+.briefing-body{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.briefing-box{border-top:1px solid var(--line);padding-top:10px;min-width:0}.briefing-box h3{font-size:13px;color:var(--muted);margin:0 0 7px;text-transform:uppercase;letter-spacing:.06em}
+.briefing-item{padding:8px 0;border-top:1px solid #26334b;overflow-wrap:anywhere}.briefing-item:first-of-type{border-top:0}.briefing-item strong{display:block}.briefing-item small{color:var(--muted)}
+.briefing-status{color:var(--muted);font-size:13px;margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.voice-result{white-space:pre-wrap;overflow-wrap:anywhere;border-top:1px solid var(--line);margin-top:12px;padding-top:10px;color:var(--muted);font-size:13px;min-height:22px}
+@media(max-width:650px){.voice-controls{grid-template-columns:1fr}.briefing-body{grid-template-columns:1fr}.briefing-settings{grid-template-columns:1fr 1fr}.briefing-settings button{grid-column:1/-1}}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){main{padding:20px 12px}.grid,.columns{grid-template-columns:1fr}.top{align-items:flex-start}.metric .value{font-size:24px}}
+</style>
+</head>
+<body><main>
+<header class="top">
+ <div class="brand"><div class="orb">J</div><div><h1>JARVIS Dashboard</h1><p>Your personal command overview</p></div></div>
+ <div class="controls"><input id="apiKey" type="password" autocomplete="off" placeholder="JARVIS API key (kept in this tab only)" aria-label="JARVIS API key"><button id="load">Load dashboard</button><button class="secondary" id="refresh">Refresh</button></div>
+</header>
+<div id="notice" class="notice">Enter your JARVIS API key to load your private dashboard. The key is not saved in browser storage.</div>
+<section class="voice-panel" aria-labelledby="voiceTitle">
+ <h2 id="voiceTitle">Talk to JARVIS</h2>
+ <p class="hint">Type or dictate a command. JARVIS only sends it after you press Send command. Natural-language dispatch supports safe read-only queries; requests to change data are refused.</p>
+ <div class="voice-controls">
+  <textarea id="voiceCommand" rows="2" placeholder="Try: show my tasks, check notifications, show my workouts, or help" aria-label="JARVIS command"></textarea>
+  <select id="voiceLanguage" aria-label="Voice language">
+   <option value="en-IN">English (India)</option><option value="en-US">English (US)</option><option value="en-GB">English (UK)</option><option value="hi-IN">Hindi</option><option value="te-IN">Telugu</option>
+  </select>
+ </div>
+ <div class="voice-actions">
+  <button id="dictate">🎙 Dictate command</button><button id="sendCommand">Send command</button><button class="secondary" id="speakReply">Read response aloud</button><a href="/voice" style="align-self:center;color:var(--accent);margin-left:5px">Open full voice console ↗</a>
+ </div>
+ <div id="voiceStatus" class="voice-result" role="status" aria-live="polite">Voice input requires browser support and microphone permission. You can always type a command.</div>
+</section>
+<section class="briefing-panel" aria-labelledby="briefingTitle">
+ <div class="briefing-head">
+  <div><h2 id="briefingTitle">Proactive Daily Briefing</h2><p class="hint">Context-aware task insights, reminder counts, and local notification status.</p></div>
+  <div class="briefing-actions"><button id="loadBriefing" class="secondary">Refresh briefing</button><button id="runProactive">Generate notifications</button></div>
+ </div>
+ <div class="briefing-settings">
+  <label><span>Proactive alerts</span><select id="proactiveEnabled"><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
+  <label><span>Quiet hours start</span><input id="quietStart" type="time" value="22:00"></label>
+  <label><span>Quiet hours end</span><input id="quietEnd" type="time" value="07:00"></label>
+  <label><span>Timezone</span><select id="briefingTimezone"><option value="Asia/Kolkata">Asia/Kolkata</option><option value="UTC">UTC</option><option value="America/New_York">America/New_York</option><option value="Europe/London">Europe/London</option><option value="Asia/Singapore">Asia/Singapore</option><option value="Australia/Sydney">Australia/Sydney</option></select></label>
+  <button id="saveBriefingSettings">Save preferences</button>
+ </div>
+ <div id="briefingStatus" class="briefing-status">Load your dashboard first, then refresh the briefing.</div>
+ <div class="briefing-body">
+  <div class="briefing-box"><h3>Priority insights</h3><div id="briefingInsights" class="empty">No briefing loaded.</div></div>
+  <div class="briefing-box"><h3>Top tasks</h3><div id="briefingTasks" class="empty">No briefing loaded.</div></div>
+  <div class="briefing-box"><h3>Reminders & alerts</h3><div id="briefingAlerts" class="empty">No briefing loaded.</div></div>
+ </div>
+</section>
+<section class="grid" id="metrics"></section>
+<section class="columns">
+ <article class="panel"><h2><span class="dot"></span>Tasks & reminders</h2><div id="tasks"></div></article>
+ <article class="panel"><h2><span class="dot"></span>Email & calendar</h2><div id="emailCalendar"></div></article>
+ <article class="panel"><h2><span class="dot"></span>Fitness</h2><div id="fitness"></div></article>
+ <article class="panel"><h2><span class="dot"></span>Finance · INR</h2><div id="finance"></div></article>
+ <article class="panel"><h2><span class="dot"></span>Notifications & routines</h2><div id="notifications"></div></article>
+ <article class="panel"><h2><span class="dot"></span>Connected services</h2><div id="services"></div></article>
+</section>
+<div class="footer">Read-only dashboard · No email is sent, calendar event is changed, or financial transaction is performed here.</div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let latestKey = "";
+function node(tag, text, cls){const el=document.createElement(tag);if(text!==undefined)el.textContent=String(text);if(cls)el.className=cls;return el;}
+function clear(el){el.replaceChildren();}
+function itemList(el, items, title, detail){clear(el);if(!items||!items.length){el.append(node("div","Nothing to show yet.","empty"));return;}items.forEach(x=>{const box=node("div",undefined,"item");box.append(node("strong",title(x)));const d=detail?detail(x):"";if(d)box.append(node("small",d));el.append(box);});}
+function metric(label,value,sub){const box=node("div",undefined,"metric");box.append(node("div",label,"label"),node("div",value===null||value===undefined?"—":value,"value"),node("div",sub||"","sub"));return box;}
+function money(v){return new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:2}).format(Number(v||0));}
+function statusPill(name,status){const box=node("div",undefined,"item");box.append(node("strong",name));const cl=status==="connected"?"pill ok":"pill warn";box.append(node("span",status||"unknown",cl));return box;}
+async function load(){
+ const key=$("apiKey").value.trim();if(!key){$("notice").className="notice error";$("notice").textContent="Enter your API key first.";return;}
+ latestKey=key;$("notice").className="notice";$("notice").textContent="Loading your overview…";
+ try{
+  const response=await fetch("/dashboard/overview",{headers:{"X-JARVIS-API-Key":key,"Accept":"application/json"},cache:"no-store"});
+  const data=await response.json().catch(()=>({detail:"Unexpected server response"}));
+  if(!response.ok)throw new Error(data.detail||`Request failed (${response.status})`);
+  clear($("metrics"));const s=data.summary||{};
+  $("metrics").append(
+   metric("Pending tasks",s.pending_tasks,"Overdue: "+(s.overdue_tasks??0)),
+   metric("Due today",s.due_today_tasks,"Tasks with today's deadline"),
+   metric("Priority emails",s.high_priority_emails,"From Email Manager"),
+   metric("Calendar · 7 days",s.upcoming_calendar_events,"Upcoming events"),
+   metric("Fitness workouts",s.workouts_returned,"Returned by Fitness Manager"),
+   metric("Notifications",s.unacknowledged_notifications,"Awaiting acknowledgement"),
+   metric("Monthly expenses",money(s.monthly_expenses_inr),"Manual local ledger · INR"),
+   metric("Monthly net",money(s.monthly_net_inr),"Income minus expenses · INR")
+  );
+  itemList($("tasks"),(data.tasks?.items||[]).slice(0,8),x=>x.title||"Untitled task",x=>`${x.priority||"normal"} priority${x.due_at?" · due "+x.due_at:""}`);
+  const ec=$("emailCalendar");clear(ec);
+  const emails=data.email?.items||[];const ev=data.calendar?.events||[];
+  ec.append(node("strong",`Priority emails · ${data.email?.status||"unknown"}`,"item"));
+  if(emails.length)emails.slice(0,5).forEach(x=>{const b=node("div",undefined,"item");b.append(node("strong",x.subject||"(No subject)"),node("small",x.sender||""));ec.append(b);});else ec.append(node("div","No email metadata available.","empty"));
+  ec.append(node("strong",`Upcoming events · ${data.calendar?.status||"unknown"}`,"item"));
+  if(ev.length)ev.slice(0,6).forEach(x=>{const b=node("div",undefined,"item");b.append(node("strong",x.summary||"(Untitled event)"),node("small",x.start||""));ec.append(b);});else ec.append(node("div","No upcoming events returned.","empty"));
+  const fitnessItems=data.fitness?.recent_workouts||[];
+  itemList($("fitness"),fitnessItems,x=>x.name||x.title||x.workout_type||"Workout",x=>x.date||x.started_at||x.created_at||"Recent workout");
+  const f=data.finance||{};const fin=$("finance");clear(fin);
+  [["Income",money(f.income)],["Expenses",money(f.expenses)],["Net",money(f.net)]].forEach(([a,b])=>{const r=node("div",undefined,"item");r.append(node("strong",a),node("small",b));fin.append(r);});
+  const budgets=f.budgets||[];if(budgets.length){fin.append(node("strong","Budgets","item"));budgets.forEach(b=>{const r=node("div",undefined,"item");r.append(node("strong",b.category),node("small",`${money(b.spent)} spent of ${money(b.amount)} · ${money(b.remaining)} remaining`));fin.append(r);});}
+  const no=data.notifications?.items||[];const nr=$("notifications");clear(nr);
+  nr.append(node("strong",`Unacknowledged · ${data.notifications?.unacknowledged_count??0}`,"item"));
+  if(no.length)no.slice(0,6).forEach(x=>{const r=node("div",undefined,"item");r.append(node("strong",x.title),node("small",x.message||x.created_at||""));nr.append(r);});
+  const routines=data.routines?.items||[];nr.append(node("strong",`Enabled routines · ${data.routines?.enabled_count??0}`,"item"));
+  if(routines.length)routines.slice(0,5).forEach(x=>{const r=node("div",undefined,"item");r.append(node("strong",x.name),node("small",`${x.time_local}${x.message?" · "+x.message:""}`));nr.append(r);});
+  const services=$("services");clear(services);
+  [["Email Manager",data.integrations?.email_manager],["Fitness Manager",data.integrations?.fitness_manager],["Google Calendar",data.integrations?.google_calendar]].forEach(([n,v])=>services.append(statusPill(n,v)));
+  $("notice").className="notice "+(data.status==="available"?"success":"");$("notice").textContent=`Overview loaded · ${data.status==="available"?"all remote sources connected":"some remote sources unavailable"} · ${data.generated_at||""}. Refresh to get current data.`;
+ }catch(e){$("notice").className="notice error";$("notice").textContent=e.message||"Could not load dashboard.";}
+}
+$("load").addEventListener("click",load);$("refresh").addEventListener("click",()=>{if(latestKey){$("apiKey").value=latestKey;load();}else load();});
+$("apiKey").addEventListener("keydown",e=>{if(e.key==="Enter")load();});
+
+// Phase 38: explicit-send voice/text command interface. API key stays in page memory.
+let voiceReplyText = "";
+function voiceRecognitionApi(){return window.SpeechRecognition||window.webkitSpeechRecognition||null;}
+$("dictate").addEventListener("click",()=>{
+ const SR=voiceRecognitionApi();
+ if(!SR){$("voiceStatus").textContent="Speech recognition is not supported in this browser. Type your command instead.";return;}
+ const rec=new SR();rec.lang=$("voiceLanguage").value;rec.continuous=false;rec.interimResults=true;rec.maxAlternatives=1;
+ $("voiceStatus").textContent="Listening…";
+ rec.onresult=e=>{let finalText="",interim="";for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript.trim();if(e.results[i].isFinal)finalText+=(finalText?" ":"")+t;else interim+=(interim?" ":"")+t;}$("voiceCommand").value=(finalText||interim).trim();};
+ rec.onerror=e=>{$("voiceStatus").textContent="Microphone input error: "+e.error+". You can type your command instead.";};
+ rec.onend=()=>{$("voiceStatus").textContent=$("voiceCommand").value.trim()?"Command captured. Review it, then press Send command.":"Listening stopped. Type a command or try again.";};
+ try{rec.start();}catch(e){$("voiceStatus").textContent="Could not start microphone: "+e.message;}
+});
+$("sendCommand").addEventListener("click",async()=>{
+ const key=$("apiKey").value.trim(),command=$("voiceCommand").value.trim();
+ if(!key){$("voiceStatus").textContent="Enter your JARVIS API key above first.";return;}
+ if(!command){$("voiceStatus").textContent="Enter or dictate a command first.";return;}
+ $("voiceStatus").textContent="Sending command…";
+ try{
+  const response=await fetch("/assistant/command",{method:"POST",headers:{"Content-Type":"application/json","X-JARVIS-API-Key":key,"Accept":"application/json"},body:JSON.stringify({command}),cache:"no-store"});
+  const data=await response.json().catch(()=>({detail:"Unexpected server response"}));
+  if(!response.ok)throw new Error(data.detail||`Request failed (${response.status})`);
+  const parts=[data.message||data.status||"Response received."];
+  if(data.count!==undefined)parts.push("Count: "+data.count);
+  if(data.data!==undefined)parts.push(JSON.stringify(data.data,null,2));
+  if(data.capabilities)parts.push(JSON.stringify(data.capabilities,null,2));
+  if(data.suggested_routes)parts.push("Review routes: "+data.suggested_routes.join(", "));
+  voiceReplyText=parts.join("\n\n");
+  $("voiceStatus").textContent="JARVIS response · "+(data.status||"received")+" · "+(data.intent||"");
+  $("voiceStatus").append(document.createTextNode("\n"+voiceReplyText));
+ }catch(e){voiceReplyText=e.message||"Command failed.";$("voiceStatus").textContent=voiceReplyText;}
+});
+$("speakReply").addEventListener("click",()=>{
+ if(!voiceReplyText){$("voiceStatus").textContent="No JARVIS response to read aloud yet.";return;}
+ if(!("speechSynthesis" in window)||typeof SpeechSynthesisUtterance==="undefined"){$("voiceStatus").textContent="Speech synthesis is not supported in this browser.";return;}
+ speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(voiceReplyText);
+ utterance.lang=$("voiceLanguage").value;
+ const voices=speechSynthesis.getVoices();
+ const preferred=voices.find(v=>v.lang.toLowerCase()===utterance.lang.toLowerCase())||voices.find(v=>v.lang.toLowerCase().startsWith(utterance.lang.split("-")[0].toLowerCase()));
+ if(preferred)utterance.voice=preferred;speechSynthesis.speak(utterance);
+});
+function briefingItem(title,detail){const el=node("div",undefined,"briefing-item");el.append(node("strong",title||"Untitled"));if(detail)el.append(node("small",detail));return el;}
+function renderBriefing(data){
+ const summary=data.summary||{},quiet=data.quiet_hours||{};
+ $("briefingStatus").textContent=`${data.status||"unknown"} · ${data.timezone||""} · quiet hours ${quiet.active?"ACTIVE":"inactive"} (${quiet.start||"—"}–${quiet.end||"—"})\nPending ${summary.pending_tasks??0} · overdue ${summary.overdue_tasks??0} · due today ${summary.due_today_tasks??0} · alerts ${summary.unacknowledged_notifications??0}\n${data.generated_at||""}`;
+ $("quietStart").value=data.preferences?.quiet_start||"22:00";$("quietEnd").value=data.preferences?.quiet_end||"07:00";
+ $("proactiveEnabled").value=String(data.preferences?.enabled!==false);
+ const tz=data.preferences?.timezone||"Asia/Kolkata";if([...$("briefingTimezone").options].some(o=>o.value===tz))$("briefingTimezone").value=tz;
+ const insightBox=$("briefingInsights");clear(insightBox);
+ const suggestions=data.suggestions||[];
+ if(!suggestions.length)insightBox.append(node("div","No priority insights right now.","empty"));
+ suggestions.slice(0,8).forEach(x=>insightBox.append(briefingItem(x.title,`${x.priority||"normal"} · ${x.message||""}`)));
+ const taskBox=$("briefingTasks");clear(taskBox);
+ const tasks=data.top_tasks||[];
+ if(!tasks.length)taskBox.append(node("div","No pending tasks.","empty"));
+ tasks.slice(0,8).forEach(x=>taskBox.append(briefingItem(x.title,`${x.priority||"normal"} priority${x.due_at?" · due "+x.due_at:""}`)));
+ const alertBox=$("briefingAlerts");clear(alertBox);
+ const alerts=[...(data.notifications||[]).map(x=>({title:x.title,detail:x.message||x.created_at})),...(data.reminders||[]).map(x=>({title:x.title,detail:"Scheduled · "+(x.due_at||"")}))];
+ if(!alerts.length)alertBox.append(node("div","No scheduled reminders or unacknowledged alerts.","empty"));
+ alerts.slice(0,10).forEach(x=>alertBox.append(briefingItem(x.title,x.detail)));
+}
+async function proactiveRequest(path,method="GET",body){
+ const key=$("apiKey").value.trim();if(!key)throw new Error("Enter your JARVIS API key first.");
+ const options={method,headers:{"X-JARVIS-API-Key":key,"Accept":"application/json","Content-Type":"application/json"},cache:"no-store"};
+ if(body!==undefined)options.body=JSON.stringify(body);
+ const response=await fetch(path,options);const data=await response.json().catch(()=>({detail:"Unexpected server response"}));
+ if(!response.ok)throw new Error(data.detail||`Request failed (${response.status})`);return data;
+}
+async function loadBriefing(){
+ $("briefingStatus").textContent="Loading proactive briefing…";
+ try{const data=await proactiveRequest("/proactive/briefing");renderBriefing(data);}
+ catch(e){$("briefingStatus").textContent=e.message||"Could not load briefing.";}
+}
+$("loadBriefing").addEventListener("click",loadBriefing);
+$("saveBriefingSettings").addEventListener("click",async()=>{
+ $("briefingStatus").textContent="Saving proactive preferences…";
+ try{const data=await proactiveRequest("/proactive/settings","PUT",{enabled:$("proactiveEnabled").value==="true",quiet_start:$("quietStart").value,quiet_end:$("quietEnd").value,timezone:$("briefingTimezone").value});
+  $("briefingStatus").textContent="Preferences saved. "+JSON.stringify(data.settings);await loadBriefing();}
+ catch(e){$("briefingStatus").textContent=e.message||"Could not save preferences.";}
+});
+$("runProactive").addEventListener("click",async()=>{
+ $("briefingStatus").textContent="Evaluating local insights and creating deduplicated in-app alerts if appropriate…";
+ try{const data=await proactiveRequest("/proactive/run","POST");$("briefingStatus").textContent=`Cycle: ${data.status||"completed"} · new notifications: ${data.created??0}.`;await loadBriefing();}
+ catch(e){$("briefingStatus").textContent=e.message||"Proactive cycle failed.";}
+});
+$("apiKey").addEventListener("change",()=>{if($("apiKey").value.trim())loadBriefing();});
+window.addEventListener("pagehide",()=>{if("speechSynthesis" in window)speechSynthesis.cancel();$("apiKey").value="";});
+</script></body></html>

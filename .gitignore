@@ -1,41 +1,165 @@
+# ============================================================
+# JARVIS — security-first Git ignore rules
+# Keep source code, tests, documentation, and dependency lockfiles.
+# Never commit secrets, personal data, runtime state, or local models.
+# ============================================================
 
-# Environment variables and secrets
+# -------------------- Environment / secrets -----------------
 .env
 .env.*
 !.env.example
+!.env.*.example
+!.env.template
 
-# Python
+# Secret files, OAuth credentials, certificates, and private keys
+secrets/
+**/secrets/
+credentials.json
+**/credentials.json
+client_secret*.json
+**/client_secret*.json
+token.json
+**/token.json
+google-calendar-credentials.json
+**/google-calendar-credentials.json
+google-calendar-token.json
+**/google-calendar-token.json
+*oauth*token*.json
+**/*oauth*token*.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.asc
+*.gpg
+*.kdbx
+
+# -------------------- Personal / runtime data ----------------
+# Default JARVIS data directory and common local data folders
+.jarvis/
+**/.jarvis/
+instance/
+**/instance/
+local_data/
+**/local_data/
+user_data/
+**/user_data/
+private_data/
+**/private_data/
+
+# Local databases and SQLite sidecar/journal files
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+
+# User uploads, generated exports, backups, and runtime artifacts
+uploads/
+**/uploads/
+user_uploads/
+**/user_uploads/
+backups/
+**/backups/
+exports/
+**/exports/
+*.backup
+*.bak
+*.dump
+
+# -------------------- Logs / temporary files -----------------
+*.log
+*.log.*
+logs/
+**/logs/
+tmp/
+**/tmp/
+temp/
+**/temp/
+*.tmp
+*.temp
+
+# -------------------- Python -------------------------------
 __pycache__/
+**/__pycache__/
 *.py[cod]
+*$py.class
 *.pyo
+*.pyd
+*.so
 *.egg-info/
-dist/
-build/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
 
 # Virtual environments
 .venv/
 venv/
 env/
+ENV/
 
-# Credentials and OAuth tokens
-credentials.json
-token.json
-client_secret*.json
-secrets/
-*.pem
-*.key
+# Packaging / build output
+build/
+dist/
+site/
+wheelhouse/
 
-# Logs
-*.log
-logs/
+# -------------------- Frontend / Node -----------------------
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+.npm/
+.pnpm-store/
+.next/
+.nuxt/
+.output/
+.svelte-kit/
+dist-ssr/
+*.local
 
-# Testing and coverage
-.pytest_cache/
-.coverage
-htmlcov/
+# Keep package-lock.json, pnpm-lock.yaml, yarn.lock, and other
+# dependency lockfiles tracked for reproducible installs.
 
-# IDE and OS files
-.vscode/
+# -------------------- AI / speech model downloads ------------
+vosk-model*/
+**/vosk-model*/
+models/vosk*/
+**/models/vosk*/
+model_cache/
+**/model_cache/
+.cache/
+**/.cache/
+huggingface/
+**/huggingface/
+
+# -------------------- IDE / operating system ----------------
 .idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
 .DS_Store
+**/.DS_Store
 Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# -------------------- Test / local environment files ----------
+.envrc
+.python-version.local
+

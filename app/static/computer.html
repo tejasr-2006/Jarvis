@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JARVIS — Computer Control</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif}body{max-width:850px;margin:2rem auto;padding:0 1rem;background:#10141c;color:#e8edf5}
+main{border:1px solid #354154;border-radius:16px;padding:1.25rem;background:#171e29}
+input,select,button{font:inherit;border-radius:8px;padding:.7rem;border:1px solid #45536a;background:#0e1420;color:inherit;width:100%;box-sizing:border-box;margin:.35rem 0}
+button{cursor:pointer;background:#263b59}button:disabled{opacity:.5;cursor:not-allowed}.row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.muted{color:#aab6c8;font-size:.9rem}.warning{border-left:4px solid #d6a84f;padding:.65rem;background:#211f1a}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0e1420;padding:1rem;border-radius:8px;min-height:2rem}
+</style></head><body><main>
+<h1>JARVIS Computer Control</h1>
+<p class="muted">Controlled actions only. Every action is proposed first and requires a separate confirmation before execution.</p>
+<p class="warning">Do not expose this service to the public internet. Use a strong JARVIS API key. Only launch allow-listed apps or open HTTP(S) URLs; arbitrary shell commands and keystroke injection are not supported.</p>
+<label for="key">JARVIS API key</label><input id="key" type="password" autocomplete="off" placeholder="Paste your JARVIS_API_KEY">
+<label for="actionType">Action</label><select id="actionType"><option value="launch_app">Launch allow-listed application</option><option value="open_url">Open website (HTTP/S only)</option></select>
+<label for="target">Application or full URL</label><input id="target" maxlength="2048" placeholder="notepad, calculator, files, or https://example.com">
+<div class="row"><button id="propose">Propose action</button><button id="refresh">Refresh action history</button></div>
+<h2>Pending action</h2><pre id="pending">No action proposed.</pre>
+<button id="confirm" disabled>Confirm and execute this action</button>
+<h2>Status</h2><pre id="status" aria-live="polite">Ready.</pre>
+<h2>Recent action history</h2><pre id="history">Load history to view recorded actions.</pre>
+</main><script>
+const $=id=>document.getElementById(id);
+let pending=null;
+function authHeaders(){const key=$('key').value.trim();if(!key)throw new Error('Enter your JARVIS API key first.');return {'Content-Type':'application/json','X-JARVIS-API-Key':key}}
+async function api(path,options={}){const r=await fetch(path,{...options,headers:{...authHeaders(),...(options.headers||{})}});const t=await r.text();let d;try{d=JSON.parse(t)}catch(e){d={detail:t}}if(!r.ok)throw new Error(d.detail||('HTTP '+r.status));return d}
+function showStatus(v){$('status').textContent=typeof v==='string'?v:JSON.stringify(v,null,2)}
+$('actionType').onchange=()=>{$('target').placeholder=$('actionType').value==='launch_app'?'notepad, calculator, or files':'https://example.com'};
+$('propose').onclick=async()=>{pending=null;$('confirm').disabled=true;$('pending').textContent='';showStatus('Validating and proposing action…');try{const d=await api('/computer/actions/propose',{method:'POST',body:JSON.stringify({action_type:$('actionType').value,target:$('target').value.trim()})});pending=d;$('pending').textContent=JSON.stringify(d,null,2);$('confirm').disabled=false;showStatus('Proposal saved. Review target and action type before confirming.');await loadHistory()}catch(e){showStatus('Proposal failed: '+e.message)}};
+$('confirm').onclick=async()=>{if(!pending||pending.status!=='proposed'){showStatus('There is no pending proposal to confirm.');return}if(!confirm('Execute this exact JARVIS computer action?\n\n'+pending.action_type+': '+pending.target))return;$('confirm').disabled=true;try{const d=await api('/computer/actions/'+encodeURIComponent(pending.id)+'/execute',{method:'POST',body:JSON.stringify({confirm:true})});pending=d;$('pending').textContent=JSON.stringify(d,null,2);showStatus(d);await loadHistory()}catch(e){showStatus('Execution failed: '+e.message);$('confirm').disabled=false}};
+async function loadHistory(){try{const d=await api('/computer/actions');$('history').textContent=JSON.stringify(d.actions,null,2)}catch(e){$('history').textContent='History unavailable: '+e.message}}
+$('refresh').onclick=()=>loadHistory();
+window.addEventListener('pagehide',()=>{$('key').value=''});
+</script></body></html>

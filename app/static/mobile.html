@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="description" content="Private mobile interface for your local JARVIS assistant">
+<link rel="manifest" href="/mobile/manifest.webmanifest">
+<title>JARVIS Mobile</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#0b1020;color:#edf2ff;--panel:#141c31;--border:#2b3857;--muted:#9eabc4;--accent:#8db7ff}
+*{box-sizing:border-box}body{margin:0;max-width:780px;margin-inline:auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:12px}.orb{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:#20365f;font-size:24px}h1{font-size:1.45rem;margin:0}.muted{color:var(--muted)}.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:14px}h2{font-size:1.05rem;margin:0 0 12px}label{display:block;font-size:.9rem;margin:8px 0 5px;color:#cbd7f2}
+input,select,textarea,button{font:inherit;border-radius:10px;padding:12px;border:1px solid #405071;background:#0e1629;color:#edf2ff;width:100%;min-height:46px}textarea{min-height:90px;resize:vertical}button{cursor:pointer;background:#20365f;font-weight:650}button.secondary{background:#0e1629}button.danger{background:#4b2633}button:disabled{opacity:.55;cursor:wait}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1;min-width:0}.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.tile{border:1px solid var(--border);border-radius:12px;padding:12px;background:#0e1629;overflow-wrap:anywhere}.tile strong{display:block;font-size:1.15rem}.tile small{color:var(--muted)}.item{padding:12px 0;border-bottom:1px solid var(--border)}.item:last-child{border-bottom:0}.item-title{font-weight:650;overflow-wrap:anywhere}.meta{font-size:.82rem;color:var(--muted);margin:4px 0 8px}.actions{display:flex;gap:8px}.actions button{width:auto;flex:1;padding:9px;font-size:.9rem;min-height:40px}.status{font-size:.9rem;min-height:1.4em;color:var(--muted)}.good{color:#7ee0ad}.bad{color:#ffb4a9}.tabs{display:flex;gap:8px;overflow:auto;margin-top:14px}.tabs a{white-space:nowrap;color:var(--accent);padding:8px 10px;border:1px solid var(--border);border-radius:10px;text-decoration:none}.hidden{display:none!important}.small{font-size:.85rem}.install{width:auto;min-height:38px;padding:8px 10px}
+@media(min-width:620px){body{padding-inline:24px}.panel{padding:20px}.tiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="orb" aria-hidden="true">✦</div><div><h1>JARVIS</h1><div class="muted small">Mobile control panel</div></div></div><button id="install" class="install secondary hidden">Install</button></header>
+<nav class="tabs"><a href="#overview">Overview</a><a href="#tasks">Tasks</a><a href="#alerts">Alerts</a><a href="/voice">Voice console</a><a href="/docs">API</a></nav>
+<section class="panel" id="connection"><h2>Secure connection</h2><p class="muted small">Your API key stays in this page's memory only. Re-enter it after reloading or closing the page.</p><label for="key">JARVIS API key</label><input id="key" type="password" autocomplete="off" placeholder="X-JARVIS-API-Key"><div class="row" style="margin-top:8px"><button id="connect">Connect / refresh</button><button id="clear" class="secondary">Clear key</button></div><p id="message" class="status" role="status">Not connected.</p></section>
+<section class="panel" id="overview"><h2>Today at a glance</h2><div class="tiles"><div class="tile"><strong id="pendingCount">—</strong><small>Pending tasks</small></div><div class="tile"><strong id="alertCount">—</strong><small>Open alerts</small></div><div class="tile"><strong id="serviceCount">—</strong><small>Services connected</small></div><div class="tile"><strong id="reminderCount">—</strong><small>Upcoming reminders</small></div></div><p id="briefing" class="muted small">Connect to load your briefing.</p></section>
+<section class="panel" id="tasks"><h2>Tasks</h2><div id="tasksList" class="muted">Connect to view tasks.</div><details style="margin-top:12px"><summary>Add a task</summary><form id="taskForm"><label for="taskTitle">Task title</label><input id="taskTitle" maxlength="200" required placeholder="e.g. Revise Python loops"><label for="taskDescription">Notes (optional)</label><textarea id="taskDescription" maxlength="2000" placeholder="What needs to be done?"></textarea><div class="row"><div><label for="taskPriority">Priority</label><select id="taskPriority"><option>normal</option><option>high</option><option>low</option></select></div><div><label for="taskDue">Due date/time (optional)</label><input id="taskDue" type="datetime-local"></div></div><button type="submit" style="margin-top:10px">Create task</button></form></details></section>
+<section class="panel" id="alerts"><h2>Notifications</h2><div id="alertsList" class="muted">Connect to view notifications.</div></section>
+<section class="panel"><h2>Quick command</h2><form id="commandForm"><label for="commandText">Ask JARVIS</label><textarea id="commandText" maxlength="2000" placeholder="e.g. Show my workouts"></textarea><button type="submit">Send command</button></form><pre id="commandResult" class="small" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></section>
+<footer class="muted small" style="padding:16px 4px">Private by design: API responses are not cached for offline use. Keep remote access behind a trusted VPN or HTTPS gateway.</footer>
+<script>
+(() => {
+ let apiKey="", deferredInstall=null;
+ const $=id=>document.getElementById(id);
+ const esc=s=>String(s??"");
+ async function api(path, options={}) {
+   const response=await fetch(path,{...options,cache:"no-store",headers:{"X-JARVIS-API-Key":apiKey,"Content-Type":"application/json",...(options.headers||{})}});
+   const data=await response.json().catch(()=>({}));
+   if(!response.ok)throw new Error(data.detail||`Request failed (${response.status})`);
+   return data;
+ }
+ function item(title, meta, buttons=[]) {
+   const box=document.createElement("div");box.className="item";
+   const h=document.createElement("div");h.className="item-title";h.textContent=esc(title);box.append(h);
+   if(meta){const m=document.createElement("div");m.className="meta";m.textContent=esc(meta);box.append(m);}
+   if(buttons.length){const a=document.createElement("div");a.className="actions";buttons.forEach(b=>a.append(b));box.append(a);}
+   return box;
+ }
+ function btn(text, fn, cls="secondary"){const b=document.createElement("button");b.textContent=text;b.className=cls;b.addEventListener("click",fn);return b;}
+ async function loadTasks(){
+   const d=await api("/tasks?status=pending&limit=100");const list=$("tasksList");list.replaceChildren();
+   $("pendingCount").textContent=(d.tasks||[]).length;
+   if(!d.tasks?.length){list.textContent="No pending tasks. Enjoy the breathing room.";return;}
+   d.tasks.forEach(t=>{const meta=`${t.priority||"normal"} priority${t.due_at?" · due "+t.due_at:""}`;
+     list.append(item(t.title,meta,[btn("Complete",async()=>{try{await api(`/tasks/${t.id}/complete`,{method:"POST",body:"{}"});await refresh();}catch(e){notify(e.message,true);}}),btn("Delete",async()=>{if(!confirm("Delete this task?"))return;try{await api(`/tasks/${t.id}`,{method:"DELETE"});await refresh();}catch(e){notify(e.message,true);}},"danger")]));
+   });
+ }
+ async function loadAlerts(){
+   const d=await api("/notifications?limit=50");const list=$("alertsList");list.replaceChildren();const arr=d.notifications||[];$("alertCount").textContent=arr.length;
+   if(!arr.length){list.textContent="No open notifications.";return;}
+   arr.forEach(n=>list.append(item(n.title||"Notification",n.message||n.created_at||"",[btn("Acknowledge",async()=>{try{await api(`/notifications/${n.id}/ack`,{method:"POST",body:"{}"});await refresh();}catch(e){notify(e.message,true);}})])));
+ }
+ async function refresh(){
+   apiKey=$("key").value.trim();if(!apiKey){notify("Enter your API key first.",true);return;}
+   $("connect").disabled=true;$("message").textContent="Connecting…";
+   try{
+     const [monitor,brief,tasks,alerts]=await Promise.all([api("/monitor/status"),api("/briefing"),api("/tasks?status=pending&limit=100"),api("/notifications?limit=50")]);
+     const services=Object.values(monitor.services||{});const connected=services.filter(s=>s.status==="connected").length;
+     $("serviceCount").textContent=`${connected}/${services.length}`;$("reminderCount").textContent=(brief.upcoming_reminders||[]).length;
+     $("briefing").textContent=brief.summary||"Briefing loaded.";$("pendingCount").textContent=(tasks.tasks||[]).length;$("alertCount").textContent=(alerts.notifications||[]).length;
+     $("message").textContent="Connected. Data refreshed.";$("message").className="status good";
+     await Promise.all([loadTasks(),loadAlerts()]);
+   }catch(e){notify(e.message,true);}finally{$("connect").disabled=false;}
+ }
+ function notify(text,error=false){$("message").textContent=text;$("message").className="status "+(error?"bad":"");}
+ $("connect").addEventListener("click",refresh);
+ $("clear").addEventListener("click",()=>{apiKey="";$("key").value="";$("message").textContent="Key cleared from this page."; $("message").className="status";});
+ $("taskForm").addEventListener("submit",async e=>{e.preventDefault();if(!$("key").value.trim()){notify("Connect first.",true);return;}const title=$("taskTitle").value.trim();if(!title)return;
+   const local=$("taskDue").value;let due_at=null;if(local){const date=new Date(local);due_at=date.toISOString();}
+   try{apiKey=$("key").value.trim();await api("/tasks",{method:"POST",body:JSON.stringify({title,description:$("taskDescription").value,priority:$("taskPriority").value,due_at})});$("taskForm").reset();notify("Task created.");await refresh();}catch(e){notify(e.message,true);}
+ });
+ $("commandForm").addEventListener("submit",async e=>{e.preventDefault();apiKey=$("key").value.trim();if(!apiKey){notify("Connect first.",true);return;}const command=$("commandText").value.trim();if(!command)return;
+   $("commandResult").textContent="Working…";try{const r=await api("/command",{method:"POST",body:JSON.stringify({command})});$("commandResult").textContent=JSON.stringify(r,null,2);}catch(e){$("commandResult").textContent=e.message;}
+ });
+ window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstall=e;$("install").classList.remove("hidden");});
+ $("install").addEventListener("click",async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$("install").classList.add("hidden");});
+ if("serviceWorker" in navigator && (location.protocol==="https:" || ["localhost","127.0.0.1"].includes(location.hostname)))navigator.serviceWorker.register("/mobile/service-worker.js").catch(()=>{});
+})();
+</script>
+</body></html>

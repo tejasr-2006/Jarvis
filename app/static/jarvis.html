@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090e17"><title>JARVIS · Personal AI</title>
+<style>
+:root{color-scheme:dark;--bg:#080d15;--side:#0b1320;--panel:#101b2a;--panel2:#142236;--line:#23364d;--txt:#eaf2fc;--muted:#91a4bb;--cyan:#70e2df;--blue:#82aaff;--green:#65d6a4;--amber:#f1c477;--red:#f18d9b;--shadow:0 18px 60px #0005}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% -10%,#16364a 0,transparent 38%),var(--bg);color:var(--txt);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.layout{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}aside{background:#0a111d;border-right:1px solid var(--line);height:100vh;position:sticky;top:0;padding:22px 15px;display:flex;flex-direction:column;z-index:5}.brand{display:flex;align-items:center;gap:12px;padding:2px 9px 25px}.logo{height:39px;width:39px;border-radius:13px;border:1px solid #5dd9d588;display:grid;place-items:center;color:var(--cyan);font-weight:800;font-size:20px;box-shadow:0 0 30px #51cfcf20}.brand b{letter-spacing:2px;font-size:15px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.2px}.navlabel{color:#657a93;font-size:10px;font-weight:700;letter-spacing:1.5px;padding:8px 12px}.nav{display:grid;gap:4px}.nav button{border:0;background:transparent;color:#9aacc2;padding:11px 12px;text-align:left;border-radius:10px;display:flex;gap:12px;align-items:center}.nav button:hover{background:#142338;color:var(--txt)}.nav button.active{background:#15303a;color:#e5ffff;box-shadow:inset 2px 0 var(--cyan)}.nav .ico{width:19px;text-align:center;font-size:16px}.sidebottom{margin-top:auto;border-top:1px solid var(--line);padding:16px 10px 0;color:var(--muted);font-size:11px}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:7px}.main{min-width:0;padding:30px clamp(18px,3.5vw,52px) 70px;max-width:1600px;width:100%;margin:auto}.top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:27px}.eyebrow{font-size:10px;letter-spacing:1.8px;color:var(--cyan);font-weight:750;margin-bottom:6px}h1{font-size:27px;letter-spacing:-.7px;margin:0 0 5px;font-weight:680}h2{font-size:16px;margin:0;font-weight:650}h3{font-size:13px;margin:0;font-weight:650}.sub{color:var(--muted);margin:0;max-width:700px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid #30445c;background:#152337;color:#e1ebf7;border-radius:10px;padding:9px 13px;font-size:12px}.btn:hover{border-color:#6b9caa}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#082023;font-weight:750}.btn.ghost{background:transparent}.btn.warn{color:var(--amber)}.btn.danger{color:var(--red)}.btn:disabled{opacity:.5;cursor:not-allowed}.keybar{display:flex;gap:9px;align-items:center;border:1px solid var(--line);background:#0c1522;border-radius:12px;padding:10px 12px;margin-bottom:23px;max-width:680px}.keybar label{font-size:10px;color:var(--muted);white-space:nowrap;letter-spacing:.8px}.keybar input{flex:1;min-width:0;border:0;background:transparent;color:var(--txt);outline:0;font-size:12px}.view{display:none}.view.active{display:block}.grid{display:grid;gap:13px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}.card{border:1px solid var(--line);background:linear-gradient(145deg,#111e2e,#0e1826);border-radius:15px;padding:17px;min-width:0;box-shadow:0 8px 28px #0002}.statlabel{color:var(--muted);font-size:11px}.statvalue{font-size:27px;font-weight:700;letter-spacing:-1px;margin:6px 0 0}.statfoot{font-size:10px;color:#7187a1}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.sectionhead{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:24px 0 12px}.sectionhead p{margin:4px 0 0;color:var(--muted);font-size:12px}.list{display:grid;gap:8px}.item{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;background:#0c1624;border:1px solid #1e3045;border-radius:11px;min-width:0}.itemmain{flex:1;min-width:0}.itemtitle{font-weight:620;overflow-wrap:anywhere}.itemmeta{color:var(--muted);font-size:11px;margin-top:3px;overflow-wrap:anywhere}.empty{color:var(--muted);font-size:12px;padding:17px;border:1px dashed #30445a;border-radius:11px;text-align:center}.badge{font-size:10px;border:1px solid #35546a;color:#a9e8e6;padding:3px 8px;border-radius:30px;white-space:nowrap}.badge.good{border-color:#276b55;color:var(--green)}.badge.warn{border-color:#735a32;color:var(--amber)}.badge.bad{border-color:#713f4b;color:var(--red)}.muted{color:var(--muted)}.field{display:grid;gap:6px;margin:10px 0}.field label{font-size:11px;color:#b7c7d9}.field input,.field textarea,.field select{width:100%;background:#0a1421;border:1px solid #2a4058;border-radius:10px;color:var(--txt);padding:10px 11px}.field textarea{min-height:82px;resize:vertical}.row{display:flex;gap:9px;align-items:center}.row>*{min-width:0}.grow{flex:1}.chatbox{height:min(54vh,560px);min-height:300px;overflow:auto;display:flex;flex-direction:column;gap:12px;padding:15px;background:#0a1421;border:1px solid var(--line);border-radius:14px}.bubble{max-width:88%;padding:12px 14px;border-radius:13px;white-space:pre-wrap;overflow-wrap:anywhere}.bubble.user{align-self:flex-end;background:#17404a;color:#eaffff;border:1px solid #2a6970}.bubble.jarvis{align-self:flex-start;background:#142337;border:1px solid #2a4058}.bubble small{display:block;color:#91a4bb;font-size:10px;margin-bottom:4px}.composer{display:flex;gap:8px;margin-top:11px}.composer textarea{flex:1;min-width:0;resize:vertical;min-height:48px;max-height:140px;background:#0a1421;border:1px solid #30445c;border-radius:12px;color:var(--txt);padding:12px}.composer .btn{align-self:stretch}.notice{padding:10px 12px;border:1px solid #2b4157;background:#0b1624;color:var(--muted);border-radius:10px;font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere}.notice.error{border-color:#74434b;color:#ffc0c8}.notice.good{border-color:#28684f;color:#a4f0ce}.switchrow{display:flex;justify-content:space-between;gap:15px;align-items:center;padding:13px 0;border-bottom:1px solid #223247}.switchrow:last-child{border:0}.switchrow b{font-size:12px}.switchrow small{display:block;color:var(--muted);font-size:11px}.switchrow input{accent-color:var(--cyan);width:17px;height:17px}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.toolbar input,.toolbar select{background:#0a1421;border:1px solid #2a4058;border-radius:9px;color:var(--txt);padding:9px}.output{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;color:#b9c9dc;max-height:250px;overflow:auto}.mobile-toggle{display:none}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.layout{grid-template-columns:1fr}aside{height:auto;position:sticky;padding:10px 12px;border-right:0;border-bottom:1px solid var(--line)}.brand{padding:0 5px 9px}.logo{height:32px;width:32px}.navlabel,.sidebottom{display:none}.nav{display:flex;overflow:auto;gap:3px}.nav button{white-space:nowrap;padding:8px 10px;font-size:11px}.nav .ico{display:none}.main{padding:20px 13px 45px}.top{flex-direction:column}.actions{width:100%}.keybar{max-width:none}.two,.three{grid-template-columns:1fr}.stats{gap:8px}.card{padding:14px}.statvalue{font-size:23px}.chatbox{min-height:280px;height:52vh}.bubble{max-width:96%}h1{font-size:23px}}
+</style></head>
+<body><div class="layout">
+<aside>
+ <div class="brand"><div class="logo">J</div><div><b>J.A.R.V.I.S.</b><small>PERSONAL INTELLIGENCE</small></div></div>
+ <div class="navlabel">WORKSPACE</div>
+ <nav class="nav" id="nav">
+  <button class="active" data-view="overview"><span class="ico">⌂</span>Overview</button>
+  <button data-view="assistant"><span class="ico">✧</span>AI Assistant</button>
+  <button data-view="tasks"><span class="ico">☷</span>Tasks</button>
+  <button data-view="email"><span class="ico">✉</span>Email</button>
+  <button data-view="fitness"><span class="ico">◈</span>Fitness</button>
+  <button data-view="notifications"><span class="ico">♢</span>Notifications</button>
+  <button data-view="memory"><span class="ico">▤</span>Memory</button>
+  <button data-view="agents"><span class="ico">◉</span>Background agents</button>
+  <button data-view="settings"><span class="ico">⚙</span>Settings</button>
+ </nav>
+ <div class="sidebottom"><span class="dot"></span><span id="connection">Local workspace</span><br><span style="display:block;margin:8px 0 0 14px">API key remains in this page's memory only.</span></div>
+</aside>
+<main>
+ <header class="top"><div><div class="eyebrow">PERSONAL AI SYSTEM / <span id="crumb">OVERVIEW</span></div><h1 id="heading">Good to see you.</h1><p class="sub" id="subheading">Your day, connected services and priorities in one place.</p></div><div class="actions"><button class="btn" id="refresh">↻ Refresh</button><button class="btn primary" id="goChat">Talk to JARVIS</button></div></header>
+ <div class="keybar"><label for="apiKey">JARVIS API KEY</label><input id="apiKey" type="password" autocomplete="off" placeholder="Enter local JARVIS API key"><button class="btn" id="applyKey">Connect</button></div>
+
+ <section class="view active" id="view-overview">
+  <div class="grid stats">
+   <div class="card"><div class="statlabel">Pending tasks</div><div class="statvalue" id="sPending">—</div><div class="statfoot" id="sDue">Due today —</div></div>
+   <div class="card"><div class="statlabel">High-priority emails</div><div class="statvalue" id="sEmail">—</div><div class="statfoot" id="emailStatus">Email service —</div></div>
+   <div class="card"><div class="statlabel">Recent workouts</div><div class="statvalue" id="sFitness">—</div><div class="statfoot" id="fitnessStatus">Fitness service —</div></div>
+   <div class="card"><div class="statlabel">Notifications</div><div class="statvalue" id="sAlerts">—</div><div class="statfoot">Unacknowledged alerts</div></div>
+  </div>
+  <div class="grid two">
+   <div class="card"><div class="sectionhead" style="margin-top:0"><div><h2>Today's priorities</h2><p>Pending tasks and deadlines</p></div><button class="btn" data-goto="tasks">Open tasks</button></div><div class="list" id="overviewTasks"><div class="empty">Connect to load your tasks.</div></div></div>
+   <div class="card"><div class="sectionhead" style="margin-top:0"><div><h2>Upcoming calendar</h2><p>Next events from connected calendar</p></div></div><div class="list" id="overviewCalendar"><div class="empty">Calendar data not loaded.</div></div></div>
+   <div class="card"><div class="sectionhead" style="margin-top:0"><div><h2>Recent email priorities</h2><p>High-priority messages only</p></div><button class="btn" data-goto="email">Open email</button></div><div class="list" id="overviewEmail"><div class="empty">Email data not loaded.</div></div></div>
+   <div class="card"><div class="sectionhead" style="margin-top:0"><div><h2>Fitness activity</h2><p>Recent workouts from Fitness Manager</p></div><button class="btn" data-goto="fitness">Open fitness</button></div><div class="list" id="overviewFitness"><div class="empty">Fitness data not loaded.</div></div></div>
+  </div>
+  <div class="sectionhead"><div><h2>Quick actions</h2><p>Start a common JARVIS workflow.</p></div></div>
+  <div class="toolbar"><button class="btn" data-prompt="Review my important emails and list anything that needs action.">Review important emails</button><button class="btn" data-prompt="Show my pending tasks and identify what is overdue.">Review my tasks</button><button class="btn" data-prompt="Review my recent workouts and summarize my fitness activity.">Review fitness</button><button class="btn" data-prompt="Help me plan the rest of my day using my tasks, emails and calendar.">Plan my day</button></div>
+ </section>
+
+ <section class="view" id="view-assistant">
+  <div class="card">
+   <div class="row" style="justify-content:space-between;margin-bottom:12px"><div><h2>JARVIS AI</h2><div class="muted" style="font-size:11px">Gemini-powered agent · tool selection · read-only actions</div></div><span class="badge">Agent mode</span></div>
+   <div class="chatbox" id="chat"><div class="bubble jarvis"><small>JARVIS</small>Hello. I can coordinate your email, fitness, tasks and calendar. What would you like me to work on?</div></div>
+   <div class="composer"><textarea id="chatInput" rows="2" placeholder="Ask JARVIS anything… (Enter to send, Shift+Enter for newline)"></textarea><button class="btn" id="mic" title="Dictate">🎙</button><button class="btn primary" id="send">Send ↗</button></div>
+   <div class="toolbar" style="margin-top:12px" aria-label="Voice controls">
+    <select id="voiceLanguage" aria-label="Speech language"><option value="en-IN">English (India)</option><option value="en-US">English (US)</option><option value="hi-IN">Hindi</option><option value="te-IN">Telugu</option></select>
+    <button class="btn" id="wakeToggle" type="button">Enable Hey JARVIS</button>
+    <button class="btn" id="voiceStop" type="button">Stop listening</button>
+    <button class="btn" id="speakReply" type="button">Read reply aloud</button>
+    <button class="btn" id="stopSpeaking" type="button">Stop speaking</button>
+    <label class="muted" style="font-size:11px"><input id="autoSpeak" type="checkbox"> Speak replies automatically</label>
+   </div>
+   <div class="notice" id="voiceStatus" role="status" aria-live="polite" style="margin-top:10px">Microphone off. Voice commands require review before sending. Browser speech recognition may use an online service.</div>
+   <div class="muted" id="chatStatus" style="font-size:11px;margin-top:9px">Your message is sent to the JARVIS agent API. Tool calls are restricted by server-side permissions.</div>
+  </div>
+ </section>
+
+ <section class="view" id="view-tasks">
+  <div class="card"><div class="sectionhead" style="margin-top:0"><div><h2>Task manager</h2><p>Create, review and complete your local JARVIS tasks.</p></div><button class="btn" id="reloadTasks">↻ Reload</button></div>
+   <div class="grid two"><div class="field"><label>Task title</label><input id="taskTitle" maxlength="200" placeholder="e.g. Prepare project demo"></div><div class="field"><label>Priority</label><select id="taskPriority"><option>normal</option><option>high</option><option>low</option></select></div></div>
+   <div class="grid two"><div class="field"><label>Description</label><input id="taskDescription" maxlength="2000" placeholder="Optional details"></div><div class="field"><label>Due date and time</label><input id="taskDue" type="datetime-local"></div></div>
+   <div class="row"><button class="btn primary" id="createTask">+ Add task</button><span class="muted" id="taskStatus" style="font-size:11px"></span></div>
+  </div>
+  <div class="sectionhead"><div><h2>Your tasks</h2><p>Only tasks stored in JARVIS are shown.</p></div><select id="taskFilter"><option value="pending">Pending</option><option value="completed">Completed</option><option value="all">All</option></select></div>
+  <div class="list" id="taskList"><div class="empty">Connect to load tasks.</div></div>
+ </section>
+
+ <section class="view" id="view-email">
+  <div class="card"><div class="sectionhead" style="margin-top:0"><div><h2>Email Manager</h2><p>High-priority email overview from your independent Email Manager service.</p></div><span class="badge" id="emailBadge">Unknown</span></div><div class="statvalue" id="emailCount">—</div><div class="muted" style="font-size:11px;margin-bottom:12px">High-priority messages returned by the connected service.</div><div class="list" id="emailList"><div class="empty">Connect and refresh to load email data.</div></div><div class="notice" style="margin-top:12px">This unified dashboard is read-only for email. Use your Email Manager app for composing, replying, sending or changing messages.</div></div>
+ </section>
+
+ <section class="view" id="view-fitness">
+  <div class="card"><div class="sectionhead" style="margin-top:0"><div><h2>Fitness Manager</h2><p>Workout overview from your independent Fitness Tracker.</p></div><span class="badge" id="fitnessBadge">Unknown</span></div><div class="statvalue" id="fitnessCount">—</div><div class="muted" style="font-size:11px;margin-bottom:12px">Workout records returned by the connected service.</div><div class="list" id="fitnessList"><div class="empty">Connect and refresh to load fitness data.</div></div><div class="notice" style="margin-top:12px">Fitness data is displayed from your Fitness Manager. This dashboard does not modify workout or health records.</div></div>
+ </section>
+
+ <section class="view" id="view-notifications">
+  <div class="card"><div class="sectionhead" style="margin-top:0"><div><h2>Notifications</h2><p>In-app alerts and fired reminders.</p></div><button class="btn" id="reloadNotifications">↻ Reload</button></div><div class="list" id="notificationList"><div class="empty">Connect to load notifications.</div></div></div>
+ </section>
+
+ <section class="view" id="view-memory">
+  <div class="grid two">
+   <div class="card"><h2>Save a memory</h2><p class="muted" style="font-size:11px">Only explicitly saved facts are added here.</p><div class="field"><label>Title</label><input id="memoryTitle" maxlength="120" placeholder="My preferred study time"></div><div class="field"><label>Category</label><select id="memoryCategory"><option>general</option><option>preference</option><option>goal</option><option>routine</option><option>decision</option></select></div><div class="field"><label>Memory</label><textarea id="memoryContent" maxlength="4000" placeholder="What should JARVIS remember?"></textarea></div><button class="btn primary" id="saveMemory">Save memory</button><div class="muted" id="memoryStatus" style="font-size:11px;margin-top:8px"></div></div>
+   <div class="card"><div class="sectionhead" style="margin-top:0"><div><h2>Memory controls</h2><p>Local memory preferences and storage.</p></div><button class="btn" id="reloadMemory">↻ Reload</button></div><div id="memoryOverview" class="notice">Connect to inspect memory settings.</div><div class="switchrow"><div><b>Use saved context</b><small>Allow relevant saved facts to be retrieved for requests.</small></div><input type="checkbox" id="memoryContext"></div><div class="switchrow"><div><b>Send context to cloud AI</b><small>Explicit opt-in before saved context is sent to Gemini.</small></div><input type="checkbox" id="memoryCloud"></div><div class="switchrow"><div><b>Save conversations</b><small>Persist conversation history locally.</small></div><input type="checkbox" id="memoryConversations"></div><button class="btn" id="saveMemoryPrefs" style="margin-top:12px">Save preferences</button></div>
+  </div>
+  <div class="sectionhead"><div><h2>Saved facts</h2><p>Review and remove individual memories.</p></div></div><div class="list" id="memoryList"><div class="empty">Connect to load memories.</div></div>
+ </section>
+
+ <section class="view" id="view-agents">
+  <div class="card"><div class="sectionhead" style="margin-top:0"><div><h2>Background agents</h2><p>Control read-only monitoring and in-app notifications.</p></div><button class="btn" id="reloadAgents">↻ Reload</button></div>
+   <div class="switchrow"><div><b>Enable background agents</b><small>Master switch for scheduled background checks.</small></div><input type="checkbox" id="agentEnabled"></div>
+   <div class="switchrow"><div><b>Task and routine monitor</b><small>Check local task deadlines and due routines.</small></div><input type="checkbox" id="agentTasks"></div>
+   <div class="switchrow"><div><b>Email priority monitor</b><small>Opt-in polling. Stores only the previous high-priority count, not email contents.</small></div><input type="checkbox" id="agentEmail"></div>
+   <div class="grid two"><div class="field"><label>Email check interval (seconds)</label><input id="agentInterval" type="number" min="60" max="86400" step="60"></div><div class="field"><label>Daily briefing time</label><input id="agentBriefingTime" type="time"></div></div>
+   <div class="row"><button class="btn primary" id="saveAgents">Save settings</button><button class="btn" id="runAgents">Run now</button></div><div class="notice" id="agentStatus" style="margin-top:12px">Connect to inspect background agents.</div>
+  </div>
+  <div class="card" style="margin-top:13px"><h2>Safety boundaries</h2><p class="muted" style="font-size:12px">Background agents create in-app notifications only. They do not send email, change fitness records, purchase items or perform external mutations.</p></div>
+ </section>
+
+ <section class="view" id="view-settings">
+  <div class="card"><h2>Connection & privacy</h2><p class="muted" style="font-size:12px">The API key is held in page memory and is not written to browser storage. Reloading this page clears it.</p><div class="notice" id="connectionStatus">Not connected.</div><div class="sectionhead"><div><h2>Service health</h2><p>Live status of your backend integrations.</p></div><button class="btn" id="checkHealth">Check health</button></div><div class="list" id="healthList"><div class="empty">Run a health check.</div></div><div class="sectionhead"><div><h2>API reference</h2><p>Explore available backend endpoints.</p></div><a class="btn" href="/docs" target="_blank" rel="noopener">Open API docs ↗</a></div></div>
+ </section>
+</main></div>
+<script>
+(()=> {
+"use strict";
+const $=id=>document.getElementById(id);
+let apiKey="",sessionId=(crypto.randomUUID?crypto.randomUUID():("s"+Date.now()+Math.random().toString(16).slice(2))).replace(/-/g,"");
+let overview=null, lastAssistantReply="";
+const meta={
+ overview:["Good to see you.","Your day, connected services and priorities in one place."],
+ assistant:["Talk to JARVIS","Ask questions across your connected applications."],
+ tasks:["Task manager","Capture priorities and keep your work moving."],
+ email:["Email Manager","Your important email signals in one view."],
+ fitness:["Fitness Manager","Your workout activity from the connected tracker."],
+ notifications:["Notifications","Stay on top of reminders and background alerts."],
+ memory:["Memory & context","Manage the information JARVIS is allowed to remember."],
+ agents:["Background agents","Configure proactive, permission-controlled monitoring."],
+ settings:["Settings","Manage your local connection and service health."]
+};
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n;}
+function empty(target,msg){$(target).replaceChildren(el("div","empty",msg));}
+function notice(target,msg,type=""){const n=$("connectionStatus");if(target!=="connectionStatus")return; n.className="notice "+type;n.textContent=msg;}
+function auth(){if(!apiKey)throw new Error("Enter your JARVIS API key in the bar above.");return {"X-JARVIS-API-Key":apiKey,"Accept":"application/json","Content-Type":"application/json"};}
+async function api(path,method="GET",body){const opt={method,headers:auth(),cache:"no-store"};if(body!==undefined)opt.body=JSON.stringify(body);const r=await fetch(path,opt);const d=await r.json().catch(()=>({detail:"Unexpected server response"}));if(!r.ok){let m=d.detail||`Request failed (${r.status})`;if(typeof m==="object")m=m.message||JSON.stringify(m);throw new Error(m);}return d;}
+function show(view){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="view-"+view));document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));$("heading").textContent=meta[view][0];$("subheading").textContent=meta[view][1];$("crumb").textContent=view.toUpperCase();if(view==="tasks")loadTasks();if(view==="notifications")loadNotifications();if(view==="memory")loadMemory();if(view==="agents")loadAgents();if(view==="email"||view==="fitness")loadOverview();}
+$("nav").addEventListener("click",e=>{const b=e.target.closest("button[data-view]");if(b)show(b.dataset.view);});
+document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.goto)));
+$("goChat").onclick=()=>show("assistant");
+$("applyKey").onclick=async()=>{apiKey=$("apiKey").value.trim();if(!apiKey){notice("connectionStatus","Enter your API key.","error");return;}try{await loadOverview();$("connection").textContent="Connected to JARVIS";notice("connectionStatus","Connected. Your key is held only in this page's memory.","good");await loadHealth();}catch(e){notice("connectionStatus",e.message,"error");}};
+$("refresh").onclick=async()=>{if(!apiKey){show("settings");notice("connectionStatus","Enter your JARVIS API key first.","error");return;}await refreshCurrent();};
+async function refreshCurrent(){await loadOverview();const v=document.querySelector(".view.active")?.id.replace("view-","");if(v==="tasks")await loadTasks();if(v==="notifications")await loadNotifications();if(v==="memory")await loadMemory();if(v==="agents")await loadAgents();}
+async function loadOverview(){try{const d=await api("/dashboard/overview");overview=d;const s=d.summary||{};$("sPending").textContent=s.pending_tasks??"—";$("sDue").textContent=`Due today ${s.due_today_tasks??"—"} · overdue ${s.overdue_tasks??"—"}`;$("sEmail").textContent=s.high_priority_emails??"—";$("emailStatus").textContent="Email "+(d.email?.status||"unknown");$("sFitness").textContent=s.workouts_returned??"—";$("fitnessStatus").textContent="Fitness "+(d.fitness?.status||"unknown");$("sAlerts").textContent=s.unacknowledged_notifications??"—";renderSimpleList("overviewTasks",d.tasks?.items||[],x=>x.title, x=>`${x.priority||"normal"} priority${x.due_at?" · "+x.due_at:""}`,"No pending tasks.");renderSimpleList("overviewCalendar",d.calendar?.events||[],x=>x.summary||x.title||"Calendar event",x=>x.start?.dateTime||x.start?.date||x.start||"Upcoming event","No upcoming events or calendar unavailable.");renderSimpleList("overviewEmail",d.email?.items||[],x=>x.subject||"(No subject)",x=>x.sender||"High-priority email","No high-priority emails returned.");renderSimpleList("overviewFitness",d.fitness?.recent_workouts||[],x=>x.name||x.workout_type||x.title||"Workout",x=>x.date||x.started_at||x.created_at||"Recent workout","No recent workouts returned.");$("emailCount").textContent=d.email?.high_priority_count??"—";$("emailBadge").textContent=d.email?.status||"unknown";$("fitnessCount").textContent=d.fitness?.workout_count??"—";$("fitnessBadge").textContent=d.fitness?.status||"unknown";renderSimpleList("emailList",d.email?.items||[],x=>x.subject||"(No subject)",x=>x.sender||"High-priority email","No high-priority emails returned.");renderSimpleList("fitnessList",d.fitness?.recent_workouts||[],x=>x.name||x.workout_type||x.title||"Workout",x=>x.date||x.started_at||x.created_at||"Recent workout","No recent workouts returned.");return d;}catch(e){$("connection").textContent="API unavailable";throw e;}}
+function renderSimpleList(id,items,title,detail,emptyText){const root=$(id);root.replaceChildren();if(!items.length){root.append(el("div","empty",emptyText));return;}items.forEach(x=>{const item=el("div","item"),main=el("div","itemmain"),t=el("div","itemtitle",title(x)),m=el("div","itemmeta",detail(x));main.append(t,m);item.append(main);root.append(item);});}
+async function loadHealth(){const root=$("healthList");root.replaceChildren();for(const [label,path] of [["JARVIS","/health"],["Email Manager","/integrations/email/health"],["Fitness Manager","/integrations/fitness/health"]]){try{const r=await fetch(path,{cache:"no-store"});const d=await r.json();const item=el("div","item"),m=el("div","itemmain");m.append(el("div","itemtitle",label),el("div","itemmeta",d.status||"reachable"));item.append(m,el("span","badge "+(d.status==="healthy"||d.status==="connected"?"good":"warn"),d.status||"unknown"));root.append(item);}catch(e){const item=el("div","item");item.append(el("div","itemtitle",label),el("span","badge bad","unavailable"));root.append(item);}}}
+$("checkHealth").onclick=loadHealth;
+
+function addBubble(who,text,metaText=""){const b=el("div","bubble "+(who==="You"?"user":"jarvis"));b.append(el("small","",who+(metaText?" · "+metaText:"")));b.append(document.createTextNode(text));$("chat").append(b);$("chat").scrollTop=$("chat").scrollHeight;return b;}
+async function sendChat(){const text=$("chatInput").value.trim();if(!text)return;if(!apiKey){$("chatStatus").textContent="Enter your JARVIS API key first.";return;}addBubble("You",text);$("chatInput").value="";$("send").disabled=true;$("chatStatus").textContent="JARVIS is planning and checking the available tools…";const pending=addBubble("JARVIS","Thinking…");try{const d=await api("/assistant/agent/chat","POST",{command:text,session_id:sessionId,max_tool_calls:5});pending.remove();lastAssistantReply=d.answer||"No response text returned.";if($("autoSpeak").checked)speakText(lastAssistantReply);addBubble("JARVIS",lastAssistantReply,`${d.status||"complete"} · ${d.tool_calls?.length||0} tool(s)`);if(d.tool_calls?.length){const details=addBubble("JARVIS","Tools used:\n"+d.tool_calls.map(x=>"• "+x.name).join("\n"),"execution details");details.style.fontSize="11px";} $("chatStatus").textContent=`Trace ${d.trace_id||"—"} · memory context ${d.memory_context_used?"used":"not sent"}.`;loadOverview().catch(()=>{});}catch(e){pending.remove();addBubble("JARVIS","I couldn't complete that request: "+e.message);$("chatStatus").textContent="Request failed. Check API key, Gemini configuration and service availability.";}finally{$("send").disabled=false;$("chatInput").focus();}}
+$("send").onclick=sendChat;$("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChat();}});
+document.querySelectorAll("[data-prompt]").forEach(b=>b.onclick=()=>{show("assistant");$("chatInput").value=b.dataset.prompt;$("chatInput").focus();});
+// Phase 7: microphone is always opt-in; recognized text is NEVER submitted automatically.
+let voiceRec=null, voiceMode="off", voiceGeneration=0;
+const speechConstructor=()=>window.SpeechRecognition||window.webkitSpeechRecognition;
+function voiceStatus(message){$("voiceStatus").textContent=message;}
+function stopListening(){
+  voiceGeneration++;voiceMode="off";
+  const rec=voiceRec;voiceRec=null;
+  if(rec){rec.onend=null;rec.onresult=null;try{rec.abort();}catch(_){}}
+  $("wakeToggle").textContent="Enable Hey JARVIS";
+  voiceStatus("Microphone off. Voice commands require review before sending.");
+}
+function speakText(text){
+  if(!("speechSynthesis" in window)){voiceStatus("Speech output unavailable in this browser.");return;}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(String(text).slice(0,3500));u.lang=$("voiceLanguage").value;
+  const voices=speechSynthesis.getVoices();
+  const match=voices.find(v=>v.lang.toLowerCase()===u.lang.toLowerCase())||voices.find(v=>v.lang.split("-")[0]===u.lang.split("-")[0]);
+  if(match)u.voice=match;
+  speechSynthesis.speak(u);
+}
+function beginRecognition(mode){
+  const SR=speechConstructor();
+  if(!SR){voiceStatus("Speech recognition is unavailable in this browser. Type your command instead.");return;}
+  stopListening();voiceMode=mode;const generation=voiceGeneration;
+  const rec=new SR();voiceRec=rec;rec.lang=$("voiceLanguage").value;
+  rec.interimResults=false;rec.continuous=mode==="wake";rec.maxAlternatives=1;
+  $("wakeToggle").textContent=mode==="wake"?"Disable Hey JARVIS":"Enable Hey JARVIS";
+  rec.onstart=()=>voiceStatus(mode==="wake"?"Listening for ‘Hey JARVIS’. Press Stop listening to disable.":"Listening for one command…");
+  rec.onresult=e=>{
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(!e.results[i].isFinal)continue;
+      const transcript=e.results[i][0].transcript.trim();
+      if(mode==="wake"){
+        const match=transcript.match(/\b(?:hey\s+)?jarvis\b[\s,.:!?]*(.*)$/i);
+        if(!match)continue;
+        const remainder=(match[1]||"").trim();
+        if(remainder){$("chatInput").value=remainder;stopListening();voiceStatus("Wake phrase detected. Review the command and press Send.");$("chatInput").focus();}
+        else {stopListening();beginRecognition("command");}
+        return;
+      }
+      $("chatInput").value=transcript;stopListening();voiceStatus("Command captured. Review it, then press Send.");$("chatInput").focus();return;
+    }
+  };
+  rec.onerror=e=>{if(generation!==voiceGeneration)return;const msg=e.error;stopListening();voiceStatus("Speech recognition stopped: "+msg+". You can type instead.");};
+  rec.onend=()=>{
+    if(generation!==voiceGeneration||voiceRec!==rec)return;
+    voiceRec=null;
+    if(mode==="wake"&&voiceMode==="wake"){
+      // Do not silently restart after an engine error or interruption.
+      stopListening();voiceStatus("Wake listening ended. Select Enable Hey JARVIS to start again.");
+    }else{stopListening();voiceStatus("Listening ended. Review any captured command before sending.");}
+  };
+  try{rec.start();}catch(e){stopListening();voiceStatus("Unable to start microphone: "+e.message);}
+}
+$("mic").onclick=()=>beginRecognition("command");
+$("wakeToggle").onclick=()=>voiceMode==="wake"?stopListening():beginRecognition("wake");
+$("voiceStop").onclick=stopListening;
+$("voiceLanguage").onchange=()=>{if(voiceMode!=="off"){stopListening();voiceStatus("Language changed. Re-enable listening when ready.");}};
+$("speakReply").onclick=()=>lastAssistantReply?speakText(lastAssistantReply):voiceStatus("Ask JARVIS a question first.");
+$("stopSpeaking").onclick=()=>{if("speechSynthesis" in window)speechSynthesis.cancel();};
+
+async function loadTasks(){try{const filter=$("taskFilter").value;const d=await api("/tasks"+(filter==="all"?"":"?status="+filter));const items=d.tasks||[];const root=$("taskList");root.replaceChildren();if(!items.length){root.append(el("div","empty","No tasks in this view."));return;}items.forEach(t=>{const item=el("div","item"),main=el("div","itemmain");main.append(el("div","itemtitle",t.title),el("div","itemmeta",`${t.priority||"normal"} priority · ${t.status||""}${t.due_at?" · due "+t.due_at:""}`));item.append(main);if(t.status==="pending"){const b=el("button","btn","Complete");b.onclick=async()=>{try{await api(`/tasks/${t.id}/complete`,"POST",{});await loadTasks();await loadOverview();}catch(e){$("taskStatus").textContent=e.message;}};item.append(b);}root.append(item);});}catch(e){empty("taskList",e.message);}}
+$("reloadTasks").onclick=loadTasks;$("taskFilter").onchange=loadTasks;
+$("createTask").onclick=async()=>{const title=$("taskTitle").value.trim();if(!title){$("taskStatus").textContent="Enter a task title.";return;}let due=null;const raw=$("taskDue").value;if(raw)due=new Date(raw).toISOString();try{await api("/tasks","POST",{title,description:$("taskDescription").value,priority:$("taskPriority").value,due_at:due});$("taskTitle").value="";$("taskDescription").value="";$("taskDue").value="";$("taskStatus").textContent="Task created.";await loadTasks();await loadOverview();}catch(e){$("taskStatus").textContent=e.message;}};
+
+async function loadNotifications(){try{const d=await api("/notifications?limit=100"),items=d.notifications||[],root=$("notificationList");root.replaceChildren();if(!items.length){root.append(el("div","empty","You're all caught up."));return;}items.forEach(n=>{const item=el("div","item"),main=el("div","itemmain");main.append(el("div","itemtitle",n.title),el("div","itemmeta",n.message||n.created_at||"Notification"));item.append(main);const b=el("button","btn","Acknowledge");b.onclick=async()=>{try{await api(`/notifications/${n.id}/ack`,"POST",{});loadNotifications();loadOverview();}catch(e){b.textContent=e.message;}};item.append(b);root.append(item);});}catch(e){empty("notificationList",e.message);}}
+$("reloadNotifications").onclick=loadNotifications;
+
+async function loadMemory(){try{const [facts,overview,prefs]=await Promise.all([api("/memory/facts?limit=100"),api("/memory/overview"),api("/memory/preferences")]);$("memoryOverview").textContent=`Storage: ${overview.storage} · Saved facts: ${overview.counts?.facts??"—"} · Saved conversations: ${overview.counts?.conversations??"—"}`;const p=prefs.preferences||{};$("memoryContext").checked=!!p.context_enabled;$("memoryCloud").checked=!!p.cloud_context_enabled;$("memoryConversations").checked=!!p.conversation_storage_enabled;const root=$("memoryList");root.replaceChildren();const items=facts.items||[];if(!items.length)root.append(el("div","empty","No saved facts yet."));items.forEach(f=>{const item=el("div","item"),main=el("div","itemmain");main.append(el("div","itemtitle",f.title),el("div","itemmeta",`${f.category} · ${f.content}`));item.append(main);const b=el("button","btn danger","Delete");b.onclick=async()=>{if(!confirm("Delete this saved memory?"))return;try{await api(`/memory/facts/${f.id}`,"DELETE");loadMemory();}catch(e){$("memoryStatus").textContent=e.message;}};item.append(b);root.append(item);});}catch(e){$("memoryOverview").textContent=e.message;}}
+$("reloadMemory").onclick=loadMemory;
+$("saveMemory").onclick=async()=>{const title=$("memoryTitle").value.trim(),content=$("memoryContent").value.trim();if(!title||!content){$("memoryStatus").textContent="Enter both a title and memory.";return;}try{await api("/memory/facts","POST",{title,content,category:$("memoryCategory").value,tags:[]});$("memoryTitle").value="";$("memoryContent").value="";$("memoryStatus").textContent="Saved locally.";loadMemory();}catch(e){$("memoryStatus").textContent=e.message;}};
+$("saveMemoryPrefs").onclick=async()=>{try{await api("/memory/preferences","PUT",{context_enabled:$("memoryContext").checked,cloud_context_enabled:$("memoryCloud").checked,conversation_storage_enabled:$("memoryConversations").checked});$("memoryStatus").textContent="Memory preferences saved.";loadMemory();}catch(e){$("memoryStatus").textContent=e.message;}};
+
+async function loadAgents(){try{const d=await api("/background-agents/status"),p=d.preferences||{};$("agentEnabled").checked=!!p.enabled;$("agentTasks").checked=!!p.task_monitor_enabled;$("agentEmail").checked=!!p.email_monitor_enabled;$("agentInterval").value=p.email_monitor_interval_seconds||300;$("agentBriefingTime").value=p.daily_briefing_time||"08:00";$("agentStatus").textContent=`Status: ${d.status} · Daily briefing: ${d.checkpoints?.daily_briefing_date||"not run today"} · External mutations: ${d.safety?.external_mutations?"enabled":"disabled"} · Notifications: ${d.safety?.notifications||"—"}`;}catch(e){$("agentStatus").textContent=e.message;}}
+$("reloadAgents").onclick=loadAgents;
+$("saveAgents").onclick=async()=>{try{const d=await api("/background-agents/settings","PUT",{enabled:$("agentEnabled").checked,task_monitor_enabled:$("agentTasks").checked,email_monitor_enabled:$("agentEmail").checked,email_monitor_interval_seconds:Number($("agentInterval").value),daily_briefing_time:$("agentBriefingTime").value});$("agentStatus").textContent="Saved: "+JSON.stringify(d.preferences);loadAgents();}catch(e){$("agentStatus").textContent=e.message;}};
+$("runAgents").onclick=async()=>{const b=$("runAgents");b.disabled=true;$("agentStatus").textContent="Running read-only checks…";try{const d=await api("/background-agents/run","POST",{});$("agentStatus").textContent=JSON.stringify(d,null,2);await loadNotifications();}catch(e){$("agentStatus").textContent=e.message;}finally{b.disabled=false;}};
+
+document.querySelectorAll("[data-prompt]").forEach(()=>{});
+window.addEventListener("pagehide",()=>{stopListening();if("speechSynthesis" in window)speechSynthesis.cancel();apiKey="";$("apiKey").value="";});
+})();
+</script></body></html>

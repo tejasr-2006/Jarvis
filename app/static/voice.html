@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS Voice Console — Advanced Voice</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif}body{max-width:760px;margin:2rem auto;padding:0 1rem;background:#10141c;color:#e8edf5}
+main{border:1px solid #354154;border-radius:16px;padding:1.25rem;background:#171e29}
+input,textarea,button{font:inherit;border-radius:8px;padding:.7rem;border:1px solid #45536a;background:#0e1420;color:inherit;width:100%;box-sizing:border-box;margin:.35rem 0}
+button{cursor:pointer;background:#263b59}button:disabled{opacity:.5;cursor:not-allowed}.row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+#output{white-space:pre-wrap;min-height:5rem;background:#0e1420;padding:1rem;border-radius:8px}.muted{color:#aab6c8;font-size:.9rem}
+</style>
+</head>
+<body>
+<main>
+<h1>JARVIS Unified Voice Assistant</h1>
+<p class="muted">Use this only on your own computer. The API key and conversation session stay in page memory; recent commands and short summaries are stored locally by JARVIS.</p>
+<label for="key">JARVIS API key</label><input id="key" type="password" autocomplete="off" placeholder="Paste your JARVIS_API_KEY">
+<label for="command">Command</label><textarea id="command" rows="3" placeholder="Try: show my tasks, show my workouts, check notifications, or help"></textarea>
+<label for="voiceLanguage">Voice language</label>
+<select id="voiceLanguage" aria-label="Voice language">
+<option value="en-US">English (US)</option><option value="en-IN">English (India)</option><option value="en-GB">English (UK)</option><option value="hi-IN">Hindi</option><option value="te-IN">Telugu</option>
+</select>
+<div class="row"><button id="send">Send command</button><button id="listen">🎙 Dictate command</button></div>
+<div class="row"><button id="wake">Enable “Hey JARVIS” mode</button><button id="stopVoice">Stop voice listening</button></div>
+<div class="row"><button id="speak">Read last response aloud</button><button id="notifications">Check reminders</button></div>
+<div class="row"><button id="clearContext">Clear conversation context</button><button id="newContext">Start new conversation</button></div>
+<p id="status" class="muted">Ready. Wake-word detection is browser-dependent. It prepares a command for review; it never sends it automatically.</p>
+<h2>Response</h2><div id="output" role="status" aria-live="polite">No command sent yet.</div>
+</main>
+<script>
+const keyEl=document.getElementById('key'), commandEl=document.getElementById('command');
+const output=document.getElementById('output'), statusEl=document.getElementById('status');
+let lastResponse='';
+let sessionId='';
+let wakeRecognition=null;
+let commandRecognition=null;
+let wakeEnabled=false;
+const voiceLanguageEl=document.getElementById('voiceLanguage');
+function speechApi(){return window.SpeechRecognition||window.webkitSpeechRecognition||null}
+function stopRecognition(rec){if(rec){try{rec.onend=null;rec.stop()}catch(e){}}}
+function stopVoiceListening(){
+  wakeEnabled=false;
+  stopRecognition(wakeRecognition); stopRecognition(commandRecognition);
+  wakeRecognition=null; commandRecognition=null;
+  document.getElementById('wake').textContent='Enable “Hey JARVIS” mode';
+  statusEl.textContent='Voice listening stopped.';
+}
+function readableResponse(raw){
+  try{
+    const obj=JSON.parse(raw);
+    if(obj.result&&typeof obj.result==='object')return obj.result.message||obj.result.summary||JSON.stringify(obj.result);
+    return obj.message||obj.response||obj.summary||raw;
+  }catch(e){return raw}
+}
+function startCommandCapture(prefill=''){
+  const SR=speechApi();
+  if(!SR){statusEl.textContent='Speech recognition is unavailable. Use text input.';return}
+  stopRecognition(commandRecognition);
+  const rec=new SR(); commandRecognition=rec;
+  rec.lang=voiceLanguageEl.value; rec.interimResults=true; rec.maxAlternatives=1; rec.continuous=false;
+  let finalText='';
+  rec.onstart=()=>statusEl.textContent='Listening for your command…';
+  rec.onresult=e=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const transcript=e.results[i][0].transcript.trim();
+      if(e.results[i].isFinal)finalText+=(finalText?' ':'')+transcript;
+      else interim+=' '+transcript;
+    }
+    commandEl.value=[prefill,finalText,interim.trim()].filter(Boolean).join(' ').trim();
+  };
+  rec.onerror=e=>statusEl.textContent='Voice input error: '+e.error;
+  rec.onend=()=>{
+    commandRecognition=null;
+    if(commandEl.value.trim())statusEl.textContent='Command captured. Review it, then press Send command.';
+    else if(wakeEnabled){
+      statusEl.textContent='No command captured. Wake-word mode remains enabled.';
+      setTimeout(()=>{if(wakeEnabled&&!wakeRecognition&&!commandRecognition)startWakeWord()},500);
+    }
+  };
+  try{rec.start()}catch(e){statusEl.textContent='Could not start speech recognition: '+e.message}
+}
+function startWakeWord(){
+  const SR=speechApi();
+  if(!SR){statusEl.textContent='Wake-word mode is unsupported in this browser. Use Dictate command.';return}
+  if(!wakeEnabled){wakeEnabled=true;document.getElementById('wake').textContent='Disable “Hey JARVIS” mode'}
+  if(wakeRecognition)return;
+  const rec=new SR(); wakeRecognition=rec;
+  rec.lang=voiceLanguageEl.value; rec.continuous=true; rec.interimResults=true; rec.maxAlternatives=1;
+  rec.onstart=()=>statusEl.textContent='Wake-word mode enabled. Say “JARVIS” or “Hey JARVIS”.';
+  rec.onresult=e=>{
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(!e.results[i].isFinal)continue;
+      const phrase=e.results[i][0].transcript.trim();
+      const match=phrase.match(/(?:hey\\s+)?jarvis[,.!\\s]*(.*)$/i);
+      if(!match)continue;
+      const trailing=(match[1]||'').trim();
+      wakeRecognition=null; stopRecognition(rec);
+      statusEl.textContent='Wake phrase detected.';
+      commandEl.value=trailing;
+      if(trailing){
+        statusEl.textContent='Wake phrase detected. Review the prepared command, then press Send command.';
+      }else{
+        startCommandCapture();
+      }
+      return;
+    }
+  };
+  rec.onerror=e=>{statusEl.textContent='Wake-word listening error: '+e.error+'. Try Dictate command instead.'};
+  rec.onend=()=>{
+    if(wakeRecognition===rec)wakeRecognition=null;
+    if(wakeEnabled&&!commandRecognition){
+      setTimeout(()=>{if(wakeEnabled&&!wakeRecognition&&!commandRecognition)startWakeWord()},700);
+    }
+  };
+  try{rec.start()}catch(e){wakeRecognition=null;statusEl.textContent='Could not start wake-word mode: '+e.message}
+}
+async function request(path, options={}) {
+  const key=keyEl.value.trim();
+  if(!key) throw new Error('Enter your JARVIS API key first.');
+  const response=await fetch(path,{...options,headers:{'Content-Type':'application/json','X-JARVIS-API-Key':key,...(options.headers||{})}});
+  const text=await response.text();
+  let data; try{data=JSON.parse(text)}catch{data={detail:text}}
+  if(!response.ok) throw new Error(data.detail||('HTTP '+response.status));
+  return data;
+}
+document.getElementById('send').onclick=async()=>{
+  const command=commandEl.value.trim(); if(!command){statusEl.textContent='Enter a command first.';return}
+  statusEl.textContent='Sending…'; output.textContent='';
+  try {const data=await request('/assistant/command',{method:'POST',body:JSON.stringify({command,session_id:sessionId||undefined})});
+    sessionId=data.session_id||sessionId; lastResponse=JSON.stringify(data,null,2); output.textContent=lastResponse; statusEl.textContent=data.status==='success'?'Done.':(data.context_used?'Context-aware response received.':'Response received.');
+    if(wakeEnabled&&!wakeRecognition&&!commandRecognition)setTimeout(()=>{if(wakeEnabled&&!wakeRecognition)startWakeWord()},500);
+  } catch(e){statusEl.textContent='Request failed';output.textContent=e.message}
+};
+document.getElementById('listen').onclick=()=>{
+  if(!speechApi()){statusEl.textContent='Speech recognition is not supported by this browser. Use text input.';return}
+  startCommandCapture();
+};
+document.getElementById('wake').onclick=()=>{
+  if(wakeEnabled){stopVoiceListening();return}
+  startWakeWord();
+};
+document.getElementById('stopVoice').onclick=stopVoiceListening;
+voiceLanguageEl.onchange=()=>{
+  if(wakeEnabled){stopVoiceListening();startWakeWord()}
+};
+document.getElementById('speak').onclick=()=>{
+  if(!lastResponse){statusEl.textContent='No response to read aloud yet.';return}
+  if(!('speechSynthesis' in window)){statusEl.textContent='Speech synthesis is not supported by this browser.';return}
+  speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(readableResponse(lastResponse));
+  utterance.lang=voiceLanguageEl.value;
+  const voices=speechSynthesis.getVoices();
+  const preferred=voices.find(v=>v.lang.toLowerCase()===utterance.lang.toLowerCase())||
+    voices.find(v=>v.lang.toLowerCase().startsWith(utterance.lang.split('-')[0].toLowerCase()));
+  if(preferred)utterance.voice=preferred;
+  speechSynthesis.speak(utterance);
+};
+document.getElementById('clearContext').onclick=async()=>{
+  if(!sessionId){statusEl.textContent='No conversation context to clear.';return}
+  try{const data=await request('/assistant/context/'+encodeURIComponent(sessionId),{method:'DELETE'});statusEl.textContent='Cleared '+data.deleted_turns+' saved turn(s).';output.textContent=JSON.stringify(data,null,2)}
+  catch(e){statusEl.textContent='Could not clear context';output.textContent=e.message}
+};
+document.getElementById('newContext').onclick=()=>{
+  sessionId='';statusEl.textContent='Started a new conversation context.';output.textContent='New conversation. Previous saved context remains available until cleared.';
+};
+document.getElementById('notifications').onclick=async()=>{
+  try{const data=await request('/notifications');output.textContent=JSON.stringify(data,null,2);lastResponse=output.textContent;statusEl.textContent='Notifications loaded.'}
+  catch(e){statusEl.textContent='Request failed';output.textContent=e.message}
+};
+window.addEventListener('pagehide',()=>{stopVoiceListening();keyEl.value='';});
+</script>
+</body>
+</html>

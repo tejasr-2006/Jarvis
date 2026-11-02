@@ -1,0 +1,4 @@
+# Optional dependencies for the Qt desktop shell (not needed for the API server).
+-r requirements.txt
+PySide6>=6.7,<7
+PySide6-WebEngine>=6.7,<7

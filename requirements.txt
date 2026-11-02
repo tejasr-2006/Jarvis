@@ -1,5 +1,8 @@
 fastapi
 uvicorn[standard]
 python-dotenv
-pytest
 httpx
+google-genai
+pytest
+python-multipart
+pypdf
